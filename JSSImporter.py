@@ -536,7 +536,7 @@ class JSSImporter(Processor):
     def summarize(self):
         """If anything has been added or updated, report back."""
         # Only summarize if something has happened.
-        if [True for value in self.env["jss_changed_objects"].values()
+        if [True for value in list(self.env["jss_changed_objects"].values())
                 if value]:
             # Create a blank summary.
             self.env["jss_importer_summary_result"] = {
@@ -629,8 +629,8 @@ class JSSImporter(Processor):
         """Build dict of replacement values based on available input."""
         # First, add in AutoPkg's env, excluding types that don't make
         # sense:
-        replace_dict = {key: val for key, val in self.env.items()
-                        if val is not None and isinstance(val, basestring)}
+        replace_dict = {key: val for key, val in list(self.env.items())
+                        if val is not None and isinstance(val, str)}
 
         # Next, add in "official" and Legacy input variables.
         replace_dict["VERSION"] = self.version
@@ -799,7 +799,7 @@ class JSSImporter(Processor):
         unique_parent_dirs = OrderedDict()
         for parent in parent_recipe_dirs:
             unique_parent_dirs[parent] = parent
-        search_dirs = ([os.path.dirname(path)] + unique_parent_dirs.keys())
+        search_dirs = ([os.path.dirname(path)] + list(unique_parent_dirs.keys()))
 
         tested = []
         final_path = ""
@@ -839,7 +839,7 @@ class JSSImporter(Processor):
         Returns:
             The text after replacement.
         """
-        for key, value in replace_dict.iteritems():
+        for key, value in replace_dict.items():
             # Wrap our keys in % to match template tags.
             text = text.replace("%%%s%%" % key, value)
         return text
@@ -858,7 +858,7 @@ class JSSImporter(Processor):
         # that has not been replaced?
         # Does the group have a blank value? (A blank value isn't really
         # invalid, but there's no need to process it further.)
-        invalid = [False for value in var.values() if isinstance(value, str)
+        invalid = [False for value in list(var.values()) if isinstance(value, str)
                    and (value.startswith("%") and value.endswith("%")) or not
                    value]
         return False if invalid else True
